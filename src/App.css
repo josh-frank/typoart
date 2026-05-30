@@ -1,0 +1,142 @@
+body {
+  overflow: hidden;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: small;
+  user-select: none;
+  -moz-user-select: none;
+}
+
+.light {
+  background-color: lightgray;
+  color: dark;
+}
+
+.dark {
+  background-color: black;
+  color: white;
+}
+
+.menu-container {
+  display: flex;
+  flex-direction: row;
+  /* align-items: flex-start; */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 15rem;
+  height: 100%;
+  z-index: 1000;
+}
+
+.collapse-button {
+  border: none;
+  background: none;
+}
+
+/* .menu {} */
+
+.menu-panel,
+.menu-panel form {
+  display: flex;
+  flex-direction: column;
+}
+
+.menu-panel button,
+.menu-panel input[type=submit] {
+  font-weight: bold;
+  width: 100%;
+}
+
+.menu-header {
+  padding: 0.25rem;
+  background-color: black;
+  color: white;
+  font-weight: bold;
+  font-style: italic;
+}
+
+.menu textarea {
+  box-sizing: border-box;
+  width: inherit;
+  resize: none;
+}
+
+.command-fields {
+  height: 20rem;
+  overflow-y: scroll;
+}
+
+.menu-row,
+.command-row {
+  display: flex;
+  flex-direction: row;
+}
+
+.menu-row input {
+  width: 5ch;
+}
+
+.command-row button {
+  /* background: none; */
+  /* border: none; */
+  width: 4ch;
+  font-weight: bold;
+}
+
+.zoom-buttons {
+  display: grid;
+  position: fixed;
+  top: 2.5%;
+  right: 2.5%;
+  z-index: 1000;
+}
+
+.zoom-buttons button {
+  width: 2rem;
+  height: 2rem;
+}
+
+.artboard {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.artboard-panel {
+  background: none;
+  position: fixed;
+  vertical-align: center;
+  bottom: 2.5%;
+  right: 2.5%;
+  z-index: 1000;
+}
+
+.command-fields::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+.command-fields::-webkit-scrollbar:vertical {
+  width: 11px;
+}
+
+.command-fields::-webkit-scrollbar:horizontal {
+  height: 11px;
+}
+
+.command-fields::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: rgba(0, 0, 0, .5);
+}
+
+.command-row input::-webkit-outer-spin-button,
+.command-row input::-webkit-inner-spin-button,
+.command-row input[type=number],
+.artboard-panel input::-webkit-outer-spin-button,
+.artboard-panel input::-webkit-inner-spin-button,
+.artboard-panel input[type=number] {
+  border: none;
+  background-color: transparent;
+  -moz-appearance: textfield;
+  -webkit-appearance: none;
+  margin: 0;
+}
