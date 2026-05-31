@@ -1,5 +1,5 @@
 const round = (value: number, decimals: number): number => 
-    Math.round(value * (decimals ** 100)) / (decimals ** 100);
+    Math.round(value * (10 ** decimals)) / (10 ** decimals);
 
 export type PathCommand = string;
 export type Point = [number, number];

@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from './types';
 import { toggleDark, zoomInButton, zoomOutButton } from './redux/artboardSlice';
 import { loadFont } from './redux/fontSlice';
 import { parseBinaryFont, parseYamlFont } from './utilities/fontLoader';
+import { saveAsYaml, exportAsOtf } from './utilities/fileUtilities';
 
 import Artboard from './components/Artboard';
 import GlyphBrowser from './components/GlyphBrowser';
@@ -16,34 +17,30 @@ const SIDEBAR_WIDTH = "14rem";
 function App() {
     const dispatch = useAppDispatch();
     const { dark } = useAppSelector(state => state.artboard);
-    const { fileName } = useAppSelector(state => state.font);
+    const fontState = useAppSelector(state => state.font);
+    const { fileName } = fontState;
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleFileOpen = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
-
         try {
             const name = file.name.toLowerCase();
             if (name.endsWith(".otf") || name.endsWith(".ttf")) {
                 const buffer = await file.arrayBuffer();
-                const fontData = await parseBinaryFont(buffer, file.name);
-                dispatch(loadFont(fontData));
+                dispatch(loadFont(await parseBinaryFont(buffer, file.name)));
             } else if (name.endsWith(".yaml") || name.endsWith(".yml")) {
-                const text = await file.text();
-                const fontData = await parseYamlFont(text, file.name);
-                dispatch(loadFont(fontData));
+                dispatch(loadFont(await parseYamlFont(await file.text(), file.name)));
             } else {
                 alert("Please open a .otf, .ttf, or .yaml font file.");
             }
         } catch (err) {
-            console.error(err);
             alert(`Could not load font: ${(err as Error).message}`);
         }
-
-        // Reset so the same file can be re-opened
         e.target.value = "";
     };
+
+    const hasFontLoaded = !!fileName;
 
     const TopBar = () => (
         <div style={{
@@ -71,17 +68,25 @@ function App() {
             />
             <button
                 onClick={() => fileInputRef.current?.click()}
-                style={{
-                    padding: "0.2rem 0.6rem",
-                    fontSize: "0.75rem",
-                    cursor: "pointer",
-                    border: `1px solid ${dark ? "#555" : "#bbb"}`,
-                    background: dark ? "#222" : "#fff",
-                    color: dark ? "#ddd" : "#333",
-                    borderRadius: "3px",
-                }}
+                style={topBtnStyle(dark)}
             >
                 📂 Open font…
+            </button>
+            <button
+                onClick={() => saveAsYaml(fontState)}
+                disabled={!hasFontLoaded}
+                title={hasFontLoaded ? undefined : "Open a font first"}
+                style={topBtnStyle(dark, !hasFontLoaded)}
+            >
+                💾 Save YAML
+            </button>
+            <button
+                onClick={() => exportAsOtf(fontState)}
+                disabled={!hasFontLoaded}
+                title={hasFontLoaded ? undefined : "Open a font first"}
+                style={topBtnStyle(dark, !hasFontLoaded)}
+            >
+                ⬆️ Export OTF
             </button>
             {fileName && (
                 <span style={{ opacity: 0.6, fontStyle: "italic" }}>{fileName}</span>
@@ -133,6 +138,19 @@ function App() {
             <ArtboardMenu />
         </main>
     );
+}
+
+function topBtnStyle(dark: boolean, disabled = false): React.CSSProperties {
+    return {
+        padding: "0.2rem 0.6rem",
+        fontSize: "0.75rem",
+        cursor: disabled ? "default" : "pointer",
+        border: `1px solid ${dark ? "#555" : "#bbb"}`,
+        background: dark ? "#222" : "#fff",
+        color: disabled ? (dark ? "#555" : "#bbb") : (dark ? "#ddd" : "#333"),
+        borderRadius: "3px",
+        opacity: disabled ? 0.5 : 1,
+    };
 }
 
 function btnStyle(dark: boolean): React.CSSProperties {
